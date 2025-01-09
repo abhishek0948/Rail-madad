@@ -1,0 +1,74 @@
+.complaint-progress-container {
+    padding: 20px;
+    max-width: 100%;
+    margin: auto;
+    position: relative;
+  }
+  
+  .back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 100;
+  }
+  
+  .back-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .complaint-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .complaint-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    width: 350px; /* Adjust width as needed */
+    height: 500px; /* Adjust height as needed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Ensure content does not overflow */
+  }
+  
+  .complaint-card-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .complaint-info {
+    flex: 1;
+    margin-bottom: 15px;
+  }
+  
+  .complaint-media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .complaint-media img, .complaint-media video {
+    max-width: 100%;
+    max-height: 200px; /* Adjust as needed */
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  

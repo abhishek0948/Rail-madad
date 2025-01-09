@@ -1,0 +1,85 @@
+/* Home.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+/* General settings */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Full-screen background */
+.home-banner {
+    position: relative;
+    height: 100vh;
+    background: url('/path-to-your-background-image.jpg') no-repeat center center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Dark transparent overlay */
+    z-index: 1;
+}
+
+.container {
+    z-index: 2;
+    position: relative;
+    max-width: 800px;
+    text-align: center;
+}
+
+.main-heading {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.subheading {
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 40px;
+}
+
+/* Button styles */
+.btn {
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    transition: background 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #ff9800;
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #e68900;
+}
+
+.home-banner {
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Button hover */
+.btn-primary:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+}
+

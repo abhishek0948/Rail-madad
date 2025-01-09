@@ -1,0 +1,36 @@
+.main-container {
+    height: 100%;
+    width: 100%;
+    /* background-color: aqua; */
+    position:absolute;
+    top: 0;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(40px);
+}
+
+.complaint-container{
+    height: 90%;
+    width: 90%;
+    background-color: aliceblue;
+}
+
+.head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.head .header{
+    font-size: 2rem;
+    margin: auto;
+    font-weight: bold;
+}
+
+.head .close-icon{
+    font-size: 2rem;
+}
+
+.head .close-icon:hover{
+    cursor: pointer;
+}

@@ -1,0 +1,92 @@
+/* ComplaintForm.css */
+.complaint-form-container {
+  width: 100%;
+  padding: 50px;
+  background-color: #f7f9fc;
+}
+
+h2 {
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.complaint-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Section inside the form */
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+/* File upload section */
+.file-upload {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding: 10px;
+  border: 2px dashed #007bff;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.file-name {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Button styling */
+.btn {
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .complaint-form {
+      grid-template-columns: 1fr; /* Stack form sections vertically on small screens */
+  }
+}
