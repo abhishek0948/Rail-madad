@@ -3,6 +3,7 @@ const medical_assistance = require('../models/complaint.js').medical_assistance;
 const women_safety = require('../models/complaint.js').women_safety;
 const staff_behaviour = require('../models/complaint.js').staff_behaviour;
 const axios = require('axios');
+const multer = require('multer');
 
 // Mapping tags to models
 const tagToModel = {
@@ -11,6 +12,18 @@ const tagToModel = {
     women_safety,
     staff_behaviour
 };
+
+// Configure multer storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Specify the directory where files will be saved
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname); // Save file with a unique name
+    },
+});
+
+const upload = multer({ storage: storage });
 
 exports.saveComplaint = async (req, res, next) => {
     try {
@@ -88,4 +101,18 @@ exports.getInfo = async (req, res, next) => {
         console.error(error);
         res.status(500).json({ message: "Error fetching data" });
     }
+};
+
+exports.imageComplaint = (req, res, next) => {
+    upload.single('image')(req, res, (err) => {
+        if (err) {
+            console.error('Error uploading file:', err);
+            return res.status(500).json({ error: 'Error uploading file' });
+        }
+
+        console.log('Request Body:', req.body); // Contains other form fields
+        console.log('Uploaded File:', req.file); // Contains file metadata
+
+        res.json({ message: 'Image complaint received', file: req.file });
+    });
 };

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
+import axios from "axios" 
 import './ComplaintForm.css';
 
 const ComplaintForm = () => {
@@ -11,7 +12,9 @@ const ComplaintForm = () => {
   const [stream, setStream] = useState(null);
   const [cameraPermission, setCameraPermission] = useState(false);
   const [audioPermission, setAudioPermission] = useState(false);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false); // Track submission state
+  const [errorMessage, setErrorMessage] = useState(''); // Track error messages
+
   const videoRef = useRef(null);
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -22,7 +25,11 @@ const ComplaintForm = () => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    setFormData({ ...formData, [name]: files[0] });
+    console.log(files[0]);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      image: files[0], // Update the specific file field (image or video)
+    }));
   };
 
   const handleStartStream = async () => {
@@ -37,38 +44,57 @@ const ComplaintForm = () => {
       }
     } catch (error) {
       console.error("Error accessing camera or microphone", error);
+      setErrorMessage("Unable to access camera or microphone. Please check your permissions.");
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Set submitting state
+    setErrorMessage(''); // Clear any previous error messages
+
     const data = new FormData();
     data.append('description', formData.description);
-    data.append('image', formData.image);
-    data.append('video', formData.video);
+    if (formData.image) data.append('image', formData.image); // 'image' must match the field name in multer
+    if (formData.video) data.append('video', formData.video);
 
-    // Send the data to the backend
-    fetch('/api/complaints', {
-      method: 'POST',
-      body: data,
-    })
-      .then(response => response.json())
-      .then(result => {
-        console.log(result);
-        // Redirect to check progress section
-        navigate('/check-progress'); // Use navigate instead of window.location.href
-      })
-      .catch(error => {
-        console.error(error);
-        // Handle error (e.g., show an error message)
+    try {
+      console.log("Printing Formdata\n",formData);
+      const response = await axios.post('http://localhost:8000/imageComplaint', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      // const result = await response.json();
+      console.log(response);
+
+      // Redirect to check progress section
+      // navigate('/check-progress');
+    } catch (error) {
+      console.error("Error submitting the form:", error);
+      setErrorMessage("Failed to submit the complaint. Please try again.");
+    } finally {
+      setIsSubmitting(false); // Reset submitting state
+    }
   };
 
+  // console.log("Printing at end\n",formData);
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
         <h2 className="text-2xl font-bold mb-6 text-center">Submit Your Complaint</h2>
         
+        {errorMessage && (
+          <div className="mb-4 text-red-500 text-center">
+            {errorMessage}
+          </div>
+        )}
+
         <div className="mb-4">
           <button
             type="button"
@@ -95,6 +121,7 @@ const ComplaintForm = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={formData.description}
               onChange={handleInputChange}
+              required
             ></textarea>
           </div>
 
@@ -110,7 +137,7 @@ const ComplaintForm = () => {
             />
           </div>
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label htmlFor="video" className="block text-sm font-semibold text-gray-700 mb-2">Upload Video (optional)</label>
             <input
               type="file"
@@ -120,10 +147,16 @@ const ComplaintForm = () => {
               className="w-full text-sm text-gray-500 border border-gray-300 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={handleFileChange}
             />
-          </div>
+          </div> */}
 
-          <button type="submit" className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            Submit Complaint
+          <button
+            type="submit"
+            className={`w-full py-2 px-4 text-white font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+            }`}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Submitting...' : 'Submit Complaint'}
           </button>
         </form>
       </div>
