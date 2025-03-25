@@ -16,5 +16,7 @@ def predict():
     message = {"answer": response["answer"], "tag": response["tag"] ,"complaint" : response["complaint"]}
     return jsonify(message)
 
+@app.post("/image")
+
 if __name__ == "__main__":
     app.run(debug=True)

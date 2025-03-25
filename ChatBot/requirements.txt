@@ -1,0 +1,8 @@
+nltk
+torch
+numpy
+flask
+flask-cors
+python-dotenv
+textblob
+pandas

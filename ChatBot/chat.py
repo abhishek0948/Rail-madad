@@ -3,11 +3,11 @@ import json
 
 import torch
 import os
-import google.generativeai as genai
+# import google.generativeai as genai
 
 from priority import input_complaint
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Create the model
 generation_config = {
@@ -18,15 +18,15 @@ generation_config = {
   "response_mime_type": "text/plain",
 }
 
-model = genai.GenerativeModel(
-  model_name="gemini-1.5-flash",
-  generation_config=generation_config,
-)
+# model = genai.GenerativeModel(
+#   model_name="gemini-1.5-flash",
+#   generation_config=generation_config,
+# )
 
-chat_session = model.start_chat(
-  history=[
-  ]
-)
+# chat_session = model.start_chat(
+#   history=[
+#   ]
+# )
 
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
