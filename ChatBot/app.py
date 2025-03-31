@@ -42,7 +42,6 @@ def process_image():
 
             return jsonify({
                 "message": "Image and description processed successfully",
-                "description": description,
                 "image_path": image_path,
                 "generated_description": generated_description,
                 "ok": True

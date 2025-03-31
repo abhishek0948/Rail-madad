@@ -22,7 +22,11 @@ const complaintSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+  image: {
+    type: String,
+    required: false
+  },
 });
 
 const cleaning = mongoose.model('Cleaning-complaint',complaintSchema);

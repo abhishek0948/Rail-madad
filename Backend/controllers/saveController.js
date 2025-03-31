@@ -6,6 +6,7 @@ const axios = require('axios');
 const multer = require('multer');
 const fs = require('fs');
 const FormData = require('form-data'); // Import FormData for multipart requests
+const { default: uploadImage } = require('../helpers/uploadImage.js');
 
 // Mapping tags to models
 const tagToModel = {
@@ -117,9 +118,10 @@ exports.imageComplaint = (req, res, next) => {
 
         try {
             // Prepare FormData for sending to app.py
-            const formData = new FormData();
-            formData.append('description', req.body.description); // Add description
+            const formData = new FormData();// Add description
+            const image = fs.createReadStream("Printing Files\n",req.file,"\n");
             formData.append('image', fs.createReadStream(req.file.path)); // Add image file
+            formData.append("upload_preset","rail_madad");
 
             // Send the FormData to app.py
             const response = await axios.post('http://127.0.0.1:5000/image', formData, {
@@ -127,10 +129,14 @@ exports.imageComplaint = (req, res, next) => {
                     ...formData.getHeaders(), // Set appropriate headers for multipart/form-data
                 },
             });
-
+            
+            
             console.log('Response from app.py:', response.data);
+            console.log("\n");
 
-            // Return the response from app.py to the client
+            const uploadImageCloudinary = await uploadImage(formData);
+            console.log("Image uploaded to Cloudinary:", uploadImageCloudinary);
+            
             res.json(response.data);
         } catch (error) {
             console.error('Error sending data to app.py:', error);
