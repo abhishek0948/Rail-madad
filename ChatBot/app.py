@@ -16,7 +16,7 @@ def predict():
     text = request.get_json().get("msg")
     response = get_response(text)
     print("The input was", text)
-    message = {"answer": response["answer"], "tag": response["tag"], "complaint": response["complaint"]}
+    message = {"tag": response["tag"], "complaint": response["complaint"]}
     return jsonify(message)
 
 @app.post("/image")
@@ -36,7 +36,6 @@ def process_image():
                 "message": "Image and description processed successfully",
                 "image_path": image_url,
                 "generated_description": generated_description,
-                "tag": response["tag"], 
             })
         except Exception as e:
             print("Error processing image:", e)
