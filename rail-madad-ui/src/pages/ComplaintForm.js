@@ -66,12 +66,12 @@ const ComplaintForm = () => {
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`Error: ${response.statusText}`);
+      // }
 
       // const result = await response.json();
-      console.log(response);
+      console.log("Response by backend\n",response);
 
       // Redirect to check progress section
       // navigate('/check-progress');

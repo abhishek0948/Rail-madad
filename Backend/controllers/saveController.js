@@ -4,6 +4,8 @@ const women_safety = require('../models/complaint.js').women_safety;
 const staff_behaviour = require('../models/complaint.js').staff_behaviour;
 const axios = require('axios');
 const multer = require('multer');
+const fs = require('fs');
+const FormData = require('form-data'); // Import FormData for multipart requests
 
 // Mapping tags to models
 const tagToModel = {
@@ -104,7 +106,7 @@ exports.getInfo = async (req, res, next) => {
 };
 
 exports.imageComplaint = (req, res, next) => {
-    upload.single('image')(req, res, (err) => {
+    upload.single('image')(req, res, async (err) => {
         if (err) {
             console.error('Error uploading file:', err);
             return res.status(500).json({ error: 'Error uploading file' });
@@ -113,6 +115,26 @@ exports.imageComplaint = (req, res, next) => {
         console.log('Request Body:', req.body); // Contains other form fields
         console.log('Uploaded File:', req.file); // Contains file metadata
 
-        res.json({ message: 'Image complaint received', file: req.file });
+        try {
+            // Prepare FormData for sending to app.py
+            const formData = new FormData();
+            formData.append('description', req.body.description); // Add description
+            formData.append('image', fs.createReadStream(req.file.path)); // Add image file
+
+            // Send the FormData to app.py
+            const response = await axios.post('http://127.0.0.1:5000/image', formData, {
+                headers: {
+                    ...formData.getHeaders(), // Set appropriate headers for multipart/form-data
+                },
+            });
+
+            console.log('Response from app.py:', response.data);
+
+            // Return the response from app.py to the client
+            res.json(response.data);
+        } catch (error) {
+            console.error('Error sending data to app.py:', error);
+            res.status(500).json({ error: 'Error processing image complaint' });
+        }
     });
 };
