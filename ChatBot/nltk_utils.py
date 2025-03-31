@@ -1,10 +1,12 @@
 import numpy as np
 import nltk
 
-try:
-    nltk.data.find('tokenizers/punkt')
-except:
-    nltk.download('punkt')
+# nltk.data.path.append('/home/abhishek/nltk_data')  # Adjust this path if needed
+
+# try:
+#     nltk.data.find('tokenizers/punkt')
+# except LookupError:
+nltk.download('punkt')
 
 # nltk.download('punkt')
 from nltk.stem.porter import PorterStemmer

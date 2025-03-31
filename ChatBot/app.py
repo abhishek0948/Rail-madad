@@ -21,28 +21,22 @@ def predict():
 
 @app.post("/image")
 def process_image():
-    # Access the uploaded image
     data = request.get_json()
     image_url = data.get('image_url')
 
     if image_url:
-        # Save the image to a directory (e.g., 'uploads/')
-        # upload_dir = 'uploads'
-        # os.makedirs(upload_dir, exist_ok=True)  # Ensure the directory exists
-        # image_path = os.path.join(upload_dir, image.filename)
-        # image.save(image_path)
-        # print("Image saved at:", image_path)
-
         # Call the imageProcessing.py function
         try:
             generated_description = describe_image(image_url)
+            response = get_response(generated_description)
             print("Generated Description:", generated_description)
+            print("Response from get_response:", response)
 
             return jsonify({
                 "message": "Image and description processed successfully",
                 "image_path": image_url,
                 "generated_description": generated_description,
-                "ok": True
+                "tag": response["tag"], 
             })
         except Exception as e:
             print("Error processing image:", e)

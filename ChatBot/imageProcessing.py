@@ -16,7 +16,9 @@ def describe_image(image_url):
         # Use the generative AI model to describe the image
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(
-            [image, "Tell me to which category does this image belong - Cleaning, Medical_Assistance, Staff Behaviour, or unknown. Just give one word answer."],
+            [image, """
+            Analyze this railway-related image and provide a very short description of the image , Directly give description without any additional text or explanation.
+            """],
         )
 
         return response.text
