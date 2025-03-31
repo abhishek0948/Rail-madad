@@ -22,8 +22,10 @@ def predict():
 @app.post("/image")
 def process_image():
     # Access the uploaded image
-    image = request.files.get('image')
-    if image:
+    data = request.get_json()
+    image_url = data.get('image_url')
+
+    if image_url:
         # Save the image to a directory (e.g., 'uploads/')
         # upload_dir = 'uploads'
         # os.makedirs(upload_dir, exist_ok=True)  # Ensure the directory exists
@@ -33,12 +35,12 @@ def process_image():
 
         # Call the imageProcessing.py function
         try:
-            generated_description = describe_image(image_path)
+            generated_description = describe_image(image_url)
             print("Generated Description:", generated_description)
 
             return jsonify({
                 "message": "Image and description processed successfully",
-                "image_path": image_path,
+                "image_path": image_url,
                 "generated_description": generated_description,
                 "ok": True
             })
