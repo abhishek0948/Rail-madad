@@ -56,25 +56,15 @@ const ComplaintForm = () => {
     const data = new FormData();
     data.append('description', formData.description);
     if (formData.image) data.append('image', formData.image); // 'image' must match the field name in multer
-    if (formData.video) data.append('video', formData.video);
 
     try {
-      console.log("Printing Formdata\n",formData);
       const response = await axios.post('http://localhost:8000/imageComplaint', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // if (!response.ok) {
-      //   throw new Error(`Error: ${response.statusText}`);
-      // }
-
-      // const result = await response.json();
-      console.log("Response by backend\n",response);
-
-      // Redirect to check progress section
-      // navigate('/check-progress');
+      console.log("Response by backend\n", response.data);
     } catch (error) {
       console.error("Error submitting the form:", error);
       setErrorMessage("Failed to submit the complaint. Please try again.");

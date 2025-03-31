@@ -3,10 +3,12 @@ const medical_assistance = require('../models/complaint.js').medical_assistance;
 const women_safety = require('../models/complaint.js').women_safety;
 const staff_behaviour = require('../models/complaint.js').staff_behaviour;
 const axios = require('axios');
-const multer = require('multer');
 const fs = require('fs');
 const FormData = require('form-data'); // Import FormData for multipart requests
-const { default: uploadImage } = require('../helpers/uploadImage.js');
+const { default: uploadImage } = require('../helpers/cloudinary.js');
+const multer = require('multer');
+const cloudinary = require('../helpers/cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // Mapping tags to models
 const tagToModel = {
@@ -17,12 +19,11 @@ const tagToModel = {
 };
 
 // Configure multer storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Specify the directory where files will be saved
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname); // Save file with a unique name
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'rail_madad', // Folder name in Cloudinary
+      allowed_formats: ['jpg', 'jpeg', 'png'], // Allowed file formats
     },
 });
 
@@ -106,41 +107,66 @@ exports.getInfo = async (req, res, next) => {
     }
 };
 
+// exports.imageComplaint = (req, res, next) => {
+//     upload.single('image')(req, res, async (err) => {
+
+//         try {
+//             // Prepare FormData for sending to app.py
+//             const formData = new FormData();// Add description
+//             const image = fs.createReadStream("Printing Files\n",req.file,"\n");
+//             formData.append('image', fs.createReadStream(req.file.path)); // Add image file
+//             formData.append("upload_preset","rail_madad");
+
+//             // Send the FormData to app.py
+            // const response = await axios.post('http://127.0.0.1:5000/image', formData, {
+            //     headers: {
+            //         ...formData.getHeaders(), // Set appropriate headers for multipart/form-data
+            //     },
+            // });
+            
+            
+//             console.log('Response from app.py:', response.data);
+//             console.log("\n");
+
+//             const uploadImageCloudinary = await uploadImage(formData);
+//             console.log("Image uploaded to Cloudinary:", uploadImageCloudinary);
+            
+//             res.json(response.data);
+//         } catch (error) {
+//             console.error('Error sending data to app.py:', error);
+//             res.status(500).json({ error: 'Error processing image complaint' });
+//         }
+//     });
+// };
+
+
 exports.imageComplaint = (req, res, next) => {
     upload.single('image')(req, res, async (err) => {
-        if (err) {
-            console.error('Error uploading file:', err);
-            return res.status(500).json({ error: 'Error uploading file' });
-        }
+      if (err) {
+        console.error('Error uploading file:', err);
+        return res.status(500).json({ error: 'Error uploading file' });
+      }
+  
+      console.log('Request Body:', req.body); // Contains other form fields
+      console.log('Uploaded File:', req.file); // Contains file metadata from Cloudinary
+      console.log('File Path:', req.file.path); // Cloudinary URL
 
-        console.log('Request Body:', req.body); // Contains other form fields
-        console.log('Uploaded File:', req.file); // Contains file metadata
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/image', req.file.path, {
+            headers: {
+                ...formData.getHeaders(),
+            },
+        });
 
-        try {
-            // Prepare FormData for sending to app.py
-            const formData = new FormData();// Add description
-            const image = fs.createReadStream("Printing Files\n",req.file,"\n");
-            formData.append('image', fs.createReadStream(req.file.path)); // Add image file
-            formData.append("upload_preset","rail_madad");
-
-            // Send the FormData to app.py
-            const response = await axios.post('http://127.0.0.1:5000/image', formData, {
-                headers: {
-                    ...formData.getHeaders(), // Set appropriate headers for multipart/form-data
-                },
-            });
-            
-            
-            console.log('Response from app.py:', response.data);
-            console.log("\n");
-
-            const uploadImageCloudinary = await uploadImage(formData);
-            console.log("Image uploaded to Cloudinary:", uploadImageCloudinary);
-            
-            res.json(response.data);
-        } catch (error) {
-            console.error('Error sending data to app.py:', error);
-            res.status(500).json({ error: 'Error processing image complaint' });
-        }
+        
+        res.json({
+          message: 'Image uploaded successfully',
+          imageUrl: req.file.path, 
+          publicId: req.file.filename,
+        });
+      } catch (error) {
+        console.error('Error processing image complaint:', error);
+        res.status(500).json({ error: 'Error processing image complaint' });
+      }
     });
-};
+  };

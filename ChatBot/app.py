@@ -21,19 +21,15 @@ def predict():
 
 @app.post("/image")
 def process_image():
-    # Access the description
-    description = request.form.get('description')
-    print("Description:", description)
-
     # Access the uploaded image
     image = request.files.get('image')
     if image:
         # Save the image to a directory (e.g., 'uploads/')
-        upload_dir = 'uploads'
-        os.makedirs(upload_dir, exist_ok=True)  # Ensure the directory exists
-        image_path = os.path.join(upload_dir, image.filename)
-        image.save(image_path)
-        print("Image saved at:", image_path)
+        # upload_dir = 'uploads'
+        # os.makedirs(upload_dir, exist_ok=True)  # Ensure the directory exists
+        # image_path = os.path.join(upload_dir, image.filename)
+        # image.save(image_path)
+        # print("Image saved at:", image_path)
 
         # Call the imageProcessing.py function
         try:
