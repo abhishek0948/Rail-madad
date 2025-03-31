@@ -25,7 +25,6 @@ const ComplaintForm = () => {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    console.log(files[0]);
     setFormData((prevFormData) => ({
       ...prevFormData,
       image: files[0], // Update the specific file field (image or video)

@@ -29,12 +29,12 @@ def process_image():
         try:
             generated_description = describe_image(image_url)
             response = get_response(generated_description)
-            print("Generated Description:", generated_description)
-            print("Response from get_response:", response)
 
             return jsonify({
                 "message": "Image and description processed successfully",
                 "image_path": image_url,
+                "tag": response["tag"],
+                "complaint": response["complaint"],
                 "generated_description": generated_description,
             })
         except Exception as e:

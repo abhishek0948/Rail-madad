@@ -34,12 +34,12 @@ exports.saveComplaint = async (req, res, next) => {
         const response = await axios.post("http://127.0.0.1:5000/predict", {
             msg: req.body.message,
         });
-
+        
         const userId = req.body.userId;
         const priority_score = response.data.complaint.priority_score;
-        const tag = response.data.tag;
-        const answer = response.data.answer;
-        // console.log(`tag: ${tag}, answer: ${answer}`);
+        const tag = response.data.tag.toString().toLowerCase().trim();
+        console.log("Printing tag:",tag);
+        const answer = "Thank you for your complaint. We will get back to you soon.";
 
         if (tag !== "greetings" && tag !== "register_complaint" && tag !== "unknown" && tagToModel[tag]) {
             const ComplaintModel = tagToModel[tag];
@@ -58,7 +58,7 @@ exports.saveComplaint = async (req, res, next) => {
                     res.status(500).json({ error: "Failed to save complaint" });
                 });
         } else {
-            res.json({ answer: answer });
+            res.json({ answer: "Please Provide more Details..." });
         }
     } catch (error) {
         console.error("Error in axios request:", error);
@@ -107,39 +107,6 @@ exports.getInfo = async (req, res, next) => {
     }
 };
 
-// exports.imageComplaint = (req, res, next) => {
-//     upload.single('image')(req, res, async (err) => {
-
-//         try {
-//             // Prepare FormData for sending to app.py
-//             const formData = new FormData();// Add description
-//             const image = fs.createReadStream("Printing Files\n",req.file,"\n");
-//             formData.append('image', fs.createReadStream(req.file.path)); // Add image file
-//             formData.append("upload_preset","rail_madad");
-
-//             // Send the FormData to app.py
-// const response = await axios.post('http://127.0.0.1:5000/image', formData, {
-//     headers: {
-//         ...formData.getHeaders(), // Set appropriate headers for multipart/form-data
-//     },
-// });
-
-
-//             console.log('Response from app.py:', response.data);
-//             console.log("\n");
-
-//             const uploadImageCloudinary = await uploadImage(formData);
-//             console.log("Image uploaded to Cloudinary:", uploadImageCloudinary);
-
-//             res.json(response.data);
-//         } catch (error) {
-//             console.error('Error sending data to app.py:', error);
-//             res.status(500).json({ error: 'Error processing image complaint' });
-//         }
-//     });
-// };
-
-
 exports.imageComplaint = (req, res, next) => {
     upload.single('image')(req, res, async (err) => {
         if (err) {
@@ -153,20 +120,42 @@ exports.imageComplaint = (req, res, next) => {
 
         try {
             const response = await axios.post('http://127.0.0.1:5000/image', {
-                image_url: req.file.path, // Send the Cloudinary URL
+                image_url: req.file.path, 
             });
 
+            const userId = "628c4f2b0a1d3e001f8b7c5d"; // Have to change this to req.userId
+            const priority_score = response.data.complaint.priority_score;
+            const tag = response.data.tag.toString().toLowerCase().trim(); 
+            const image = response.data.image_path;
+            const description = response.data.generated_description;
+            const answer = "Thank you for your complaint. We will get back to you soon.";
+            
+            console.log("Printing response:");
+            console.log("Printing tag:", tag);
+            console.log("Printing image:", image);
+            console.log("Printing description:", description);
+            console.log("Printing priority_score:", priority_score);
+            console.log("Printing userId:", userId);
 
-            console.log('Response from app.py:', response.data);
-
-            // Return the response from Flask to the client
-            res.json({
-                message: 'Image uploaded and processed successfully',
-                flaskResponse: response.data,
-            });
+            if (tag !== "greetings" && tag !== "register_complaint" && tag !== "unknown" && tagToModel[tag]) {
+                const ComplaintModel = tagToModel[tag];
+    
+                const complaint = new ComplaintModel({
+                    description: description,
+                    priority_score: priority_score,
+                    userId: userId,
+                    status: 0,
+                    image: image,
+                });
+    
+                await complaint.save();
+                return res.json({ answer: answer }); // Send response here and stop further execution
+            } else {
+                return res.json({ answer: "Unable to detect..." }); // Send response here and stop further execution
+            }
         } catch (error) {
             console.error('Error processing image complaint:', error);
-            res.status(500).json({ error: 'Error processing image complaint' });
+            return res.status(500).json({ error: 'Error processing image complaint' }); // Send error response
         }
     });
 };
