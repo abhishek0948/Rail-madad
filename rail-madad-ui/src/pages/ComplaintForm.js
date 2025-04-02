@@ -2,8 +2,11 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom'; 
 import axios from "axios" 
 import './ComplaintForm.css';
+import { useSelector } from 'react-redux';
+import { toast } from "sonner";
 
 const ComplaintForm = () => {
+  const { user } = useSelector((store) => store.auth);
   const [formData, setFormData] = useState({
     description: '',
     image: null,
@@ -54,16 +57,24 @@ const ComplaintForm = () => {
 
     const data = new FormData();
     data.append('description', formData.description);
+    data.append('userId', user._id); // Include user ID in the form data
     if (formData.image) data.append('image', formData.image); // 'image' must match the field name in multer
 
     try {
-      const response = await axios.post('http://localhost:8000/imageComplaint', data, {
+      const response = await axios.post('http://localhost:8000/imageComplaint',data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      console.log("Response by backend\n", response.data);
+      if(response.data.success) {
+        console.log("Printing in success\n")
+        navigate('/home');
+        toast.success(response.data.message);
+      } 
+      if(response.data.error) {
+        toast.error(response.data.message);
+      }
     } catch (error) {
       console.error("Error submitting the form:", error);
       setErrorMessage("Failed to submit the complaint. Please try again.");

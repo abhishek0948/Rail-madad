@@ -113,17 +113,21 @@ exports.imageComplaint = (req, res, next) => {
             console.error('Error uploading file:', err);
             return res.status(500).json({ error: 'Error uploading file' });
         }
-
+        
         console.log('Request Body:', req.body); // Contains other form fields
         console.log('Uploaded File:', req.file); // Contains file metadata from Cloudinary
         console.log('File Path:', req.file.path); // Cloudinary URL
-
+        
         try {
             const response = await axios.post('http://127.0.0.1:5000/image', {
                 image_url: req.file.path, 
             });
+            
+            const userId = req.body.userId;
+            if(!userId) {
+                return res.status(400).json({error : "User Id is req"});
+            }
 
-            const userId = "628c4f2b0a1d3e001f8b7c5d"; // Have to change this to req.userId
             const priority_score = response.data.complaint.priority_score;
             const tag = response.data.tag.toString().toLowerCase().trim(); 
             const image = response.data.image_path;
@@ -149,7 +153,7 @@ exports.imageComplaint = (req, res, next) => {
                 });
     
                 await complaint.save();
-                return res.json({ answer: answer }); // Send response here and stop further execution
+                return res.json({ answer: answer ,success:true,error:false }); // Send response here and stop further execution
             } else {
                 return res.json({ answer: "Unable to detect..." }); // Send response here and stop further execution
             }
