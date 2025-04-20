@@ -9,6 +9,7 @@ const { default: uploadImage } = require('../helpers/cloudinary.js');
 const multer = require('multer');
 const cloudinary = require('../helpers/cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const User = require('../models/User.js');
 
 // Mapping tags to models
 const tagToModel = {
@@ -30,12 +31,23 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 exports.saveComplaint = async (req, res, next) => {
+    console.log(req.body);
+
     try {
+        const msg = req.body.message || req.body.complaint;
+
         const response = await axios.post("http://127.0.0.1:5000/predict", {
-            msg: req.body.message,
+            msg: msg,
         });
         
         const userId = req.body.userId;
+        if(!userId) {
+            const mobileNumber = req.body.mobileNumber;
+            if(!mobileNumber) return res.json({message:"No mobile Number",error:true,success:false})
+            const user = await User.findOne({phoneNumber : mobileNumber});
+            if(!user) return res.json({message: "No user for this number",error:true,success:false});
+        }
+
         const priority_score = response.data.complaint.priority_score;
         const tag = response.data.tag.toString().toLowerCase().trim();
         console.log("Printing tag:",tag);
